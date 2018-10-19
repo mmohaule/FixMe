@@ -9,7 +9,6 @@ public class Attachment {
 	private Thread mainThread;
 	private ByteBuffer buffer;
 	private boolean isRead;
-	
 
 	public ByteBuffer getBuffer() {
 		return buffer;
