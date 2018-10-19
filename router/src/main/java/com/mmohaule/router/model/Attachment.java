@@ -11,15 +11,8 @@ public class Attachment {
 	private AsynchronousSocketChannel clientChannel;
 	private ByteBuffer buffer;
 	private SocketAddress clientAddr;
+	private int port;
 	private boolean isRead;
-
-	public AsynchronousServerSocketChannel getServer() {
-		return serverChannel;
-	}
-
-	public void setServer(AsynchronousServerSocketChannel server) {
-		this.serverChannel = server;
-	}
 
 	public AsynchronousSocketChannel getClientChannel() {
 		return clientChannel;
@@ -55,5 +48,21 @@ public class Attachment {
 
 	public SocketAddress getClientAddress() {
 		return clientAddr;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int serverPort) {
+		port = serverPort;
+	}
+
+	public AsynchronousServerSocketChannel getServerChannel() {
+		return serverChannel;
+	}
+
+	public void setServerChannel(AsynchronousServerSocketChannel serverChannel) {
+		this.serverChannel = serverChannel;
 	}
 }

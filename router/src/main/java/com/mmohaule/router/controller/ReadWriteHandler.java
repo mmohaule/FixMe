@@ -5,14 +5,14 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.charset.Charset;
 import java.util.Hashtable;
-import java.util.Map;
 
 import com.mmohaule.router.model.Attachment;
 
 public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> {
 	
 	private static int clientID = 0;
-	private static Hashtable<String, AsynchronousSocketChannel> rountingTable = new Hashtable<String, AsynchronousSocketChannel>();
+	private static Hashtable<String, AsynchronousSocketChannel> brokerTable = new Hashtable<String, AsynchronousSocketChannel>();
+	private static Hashtable<String, AsynchronousSocketChannel> marketTable = new Hashtable<String, AsynchronousSocketChannel>();
 	
 
 	ReadWriteHandler() {
@@ -69,7 +69,7 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
 			attachment.getBuffer().put(data);
 			attachment.getBuffer().flip();
 			
-			addToRouteTable(attachment.getClientChannel());
+			addToRouteTable(attachment);
     	}
     	
     }
@@ -78,12 +78,12 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
 		return Integer.toString(clientID);
 	}
     
-    @SuppressWarnings("rawtypes")
-	private static void addToRouteTable(AsynchronousSocketChannel clientChannel) {
-    	rountingTable.put(getID(), clientChannel);
-    	/*for (Map.Entry entry:rountingTable.entrySet()) { 
-            System.out.println(entry.getKey() + " " + entry.getValue()); 
-        } */
+	private static void addToRouteTable(Attachment attachment) {
+		
+		if (attachment.getPort() == 5000)
+			brokerTable.put(getID(), attachment.getClientChannel());
+		else if (attachment.getPort() == 5001)
+			marketTable.put(getID(), attachment.getClientChannel());	
     }
 
 }

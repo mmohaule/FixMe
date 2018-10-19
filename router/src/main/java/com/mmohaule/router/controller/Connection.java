@@ -20,13 +20,13 @@ public class Connection implements Runnable {
 			AsynchronousServerSocketChannel server;
 			server = AsynchronousServerSocketChannel.open();
 
-			InetSocketAddress sAddr = new InetSocketAddress(host, port);
-			//System.out.println("Before Bind");
-			server.bind(sAddr);
-			System.out.format("Server is listening at %s%n", sAddr);
-			Attachment attach = new Attachment();
-			attach.setServer(server);
-			server.accept(attach, new ConnectionHandler());
+			InetSocketAddress socketAddress = new InetSocketAddress(host, port);
+			server.bind(socketAddress);
+			System.out.format("Server is listening at %s%n", socketAddress);
+			Attachment attachment = new Attachment();
+			attachment.setServerChannel(server);
+			attachment.setPort(port);
+			server.accept(attachment, new ConnectionHandler());
 			Thread.currentThread().join();
 			
 		} catch (IOException e) {
