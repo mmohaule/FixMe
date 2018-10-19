@@ -17,7 +17,7 @@ public class ConnectionHandler implements CompletionHandler<AsynchronousSocketCh
 			ReadWriteHandler rwHandler = new ReadWriteHandler();
 			Attachment newAttach = new Attachment();
 			newAttach.setServer(attach.getServer());
-			newAttach.setClient(client);
+			newAttach.setClientChannel(client);
 			newAttach.setBuffer(ByteBuffer.allocate(2048));
 			newAttach.setRead(true);
 			newAttach.setClientAddr(clientAddr);

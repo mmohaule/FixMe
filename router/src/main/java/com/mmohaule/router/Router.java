@@ -9,17 +9,17 @@ public class Router {
 		
 		int port = 5000;
 		
-		Connection con1 = new Connection(HOST, port);
+		Connection brokerConnection = new Connection(HOST, port);
 		
 		
 		port = 5001;
-		Connection con2 = new Connection(HOST, port);
+		Connection markertConnection = new Connection(HOST, port);
 		
-		Thread t1 = new Thread(con1);
-		Thread t2 = new Thread(con2);
+		Thread brokerThread = new Thread(brokerConnection);
+		Thread marketThread = new Thread(markertConnection);
 		
-		t1.start();
-		t2.start();
+		brokerThread.start();
+		marketThread.start();
 		
 	}
 }

@@ -1,14 +1,18 @@
 package com.mmohaule.router.controller;
 
 import java.io.IOException;
+import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.charset.Charset;
+import java.util.Hashtable;
+import java.util.Map;
 
 import com.mmohaule.router.model.Attachment;
 
 public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> {
 	
 	private static int clientID = 0;
+	private static Hashtable<String, AsynchronousSocketChannel> rountingTable = new Hashtable<String, AsynchronousSocketChannel>();
 	
 
 	ReadWriteHandler() {
@@ -19,7 +23,7 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
 
         if (result == -1) {
             try {
-                attachment.getClient().close();
+                attachment.getClientChannel().close();
                 System.out.println("Stopped listening to the client: " + attachment.getClientAddress());
             }
             catch (IOException e) {
@@ -29,12 +33,12 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
 
         if (attachment.isRead()) {
         	processRequest(attachment);
-            attachment.getClient().write(attachment.getBuffer(), attachment, this);
+            attachment.getClientChannel().write(attachment.getBuffer(), attachment, this);
         }
         else {
             attachment.setRead(true);
             attachment.getBuffer().clear();
-            attachment.getClient().read(attachment.getBuffer(), attachment, this);
+            attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
         }
 
     }
@@ -64,6 +68,8 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
     		byte[] data = getID().getBytes(cs);
 			attachment.getBuffer().put(data);
 			attachment.getBuffer().flip();
+			
+			addToRouteTable(attachment.getClientChannel());
     	}
     	
     }
@@ -71,5 +77,13 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
     private static String getID() {
 		return Integer.toString(clientID);
 	}
+    
+    @SuppressWarnings("rawtypes")
+	private static void addToRouteTable(AsynchronousSocketChannel clientChannel) {
+    	rountingTable.put(getID(), clientChannel);
+    	/*for (Map.Entry entry:rountingTable.entrySet()) { 
+            System.out.println(entry.getKey() + " " + entry.getValue()); 
+        } */
+    }
 
 }

@@ -7,26 +7,26 @@ import java.nio.channels.AsynchronousSocketChannel;
 
 public class Attachment {
 
-	private AsynchronousServerSocketChannel server;
-	private AsynchronousSocketChannel client;
+	private AsynchronousServerSocketChannel serverChannel;
+	private AsynchronousSocketChannel clientChannel;
 	private ByteBuffer buffer;
 	private SocketAddress clientAddr;
 	private boolean isRead;
 
 	public AsynchronousServerSocketChannel getServer() {
-		return server;
+		return serverChannel;
 	}
 
 	public void setServer(AsynchronousServerSocketChannel server) {
-		this.server = server;
+		this.serverChannel = server;
 	}
 
-	public AsynchronousSocketChannel getClient() {
-		return client;
+	public AsynchronousSocketChannel getClientChannel() {
+		return clientChannel;
 	}
 
-	public void setClient(AsynchronousSocketChannel client) {
-		this.client = client;
+	public void setClientChannel(AsynchronousSocketChannel client) {
+		this.clientChannel = client;
 	}
 
 	public ByteBuffer getBuffer() {
