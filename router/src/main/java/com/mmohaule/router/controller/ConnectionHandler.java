@@ -9,6 +9,9 @@ import java.nio.channels.CompletionHandler;
 import com.mmohaule.router.model.Attachment;
 
 public class ConnectionHandler implements CompletionHandler<AsynchronousSocketChannel, Attachment> {
+
+	private static int ID = 1;
+
 	public void completed(AsynchronousSocketChannel clientChannel, Attachment attachment) {
 		try {
 			SocketAddress clientAddress = clientChannel.getRemoteAddress();
@@ -23,7 +26,10 @@ public class ConnectionHandler implements CompletionHandler<AsynchronousSocketCh
 			newAttachment.setClientChannel(clientChannel);
 			newAttachment.setBuffer(ByteBuffer.allocate(2048));
 			newAttachment.setRead(true);
+			newAttachment.setMustRead(true);
 			newAttachment.setClientAddr(clientAddress);
+			newAttachment.setID(ID++);
+			RequestHandler.addToRouteTable(newAttachment);
 			
 			clientChannel.read(newAttachment.getBuffer(), newAttachment, readWriteHandler);
 		} catch (IOException e) {

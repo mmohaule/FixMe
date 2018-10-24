@@ -9,15 +9,7 @@ import java.util.Hashtable;
 import com.mmohaule.router.model.Attachment;
 
 public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> {
-	
-	private static int clientID = 0;
-	private static Hashtable<String, AsynchronousSocketChannel> brokerTable = new Hashtable<String, AsynchronousSocketChannel>();
-	private static Hashtable<String, AsynchronousSocketChannel> marketTable = new Hashtable<String, AsynchronousSocketChannel>();
-	
 
-	ReadWriteHandler() {
-		clientID++;
-	}
 	
     public void completed(Integer result, Attachment attachment) {
 
@@ -39,39 +31,62 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
         
         
         if (attachment.isRead()) {
-        	AsynchronousSocketChannel channel = processRequest(attachment);
-        
+        	Attachment channel = RequestHandler.processRequest(attachment);
+            attachment.setRead(false);
         	
         	if (channel != null) {
-        		
-        		
+
+                System.out.println("Market found");
         		//attachment.getBuffer().flip();
                 limits = attachment.getBuffer().limit();
                 bytes = new byte[limits];
                 attachment.getBuffer().get(bytes, 0, limits);
                 msg = new String(bytes);
-                
+
+
+                ReadWriteHandler readWriteHandler = new ReadWriteHandler();
                 
                 System.out.println("Buffer" + ": " + msg);
-        		System.out.println("Market found: ");
-        		channel.write(attachment.getBuffer(), attachment, this);
+                System.out.println("Writting to : " + channel.getID());
+        		//channel.write(attachment.getBuffer(), attachment, readWriteHandler);
+                Charset cs = Charset.forName("UTF-8");
+                attachment.getBuffer().clear();
+                //System.out.println("processRequest() - line 85: Clearing buffer...");
+                byte[] data = msg.getBytes(cs);
+                channel.getBuffer().put(data);
+                channel.getBuffer().flip();
+                channel.setRead(false);
+                channel.setMustRead(true);
+                channel.getClientChannel().write(channel.getBuffer(), channel, this );
+                //attachment.getClientChannel().write(attachment.getBuffer(), attachment, this );
         	}
-        	else
-        		attachment.getClientChannel().write(attachment.getBuffer(), attachment, this);
+        	else {
+        	    System.out.println("Market is null");
+        	    if (attachment.getPort() == 5001) {
+        	        attachment.setMustRead(false);
+                }
+                attachment.getClientChannel().write(attachment.getBuffer(), attachment, this);
+            }
         }
         else {
-            attachment.setRead(true);
             attachment.getBuffer().clear();
-            System.out.println("complted() - line 57: Clearing buffer...");
-            attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
+            if (attachment.isMustRead()) {
+                attachment.setRead(true);
+                System.out.println("completed() - line 57: Clearing buffer...");
+                attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
+            }
+            else {
+                attachment.setRead(false);
+                System.out.println("Not listening");
+            }
             
-            //attachment.getBuffer().flip();
+            /*attachment.getBuffer().flip();
             limits = attachment.getBuffer().limit();
             bytes = new byte[limits];
             attachment.getBuffer().get(bytes, 0, limits);
             msg = new String(bytes);
             
-            System.out.println("Buffer (read)" + ": " + msg);
+            System.out.println("Buffer (read)--" + ": " + msg);*/
         }
 
     }
@@ -80,34 +95,7 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
         exc.printStackTrace();
     }
     
-    private static AsynchronousSocketChannel processRequest(Attachment attachment) {
-    	
-    	int     limits;
-        byte[]  bytes;
-        String  msg;
 
-        attachment.getBuffer().flip();
-        limits = attachment.getBuffer().limit();
-        bytes = new byte[limits];
-        attachment.getBuffer().get(bytes, 0, limits);
-        msg = new String(bytes);
-        System.out.println(attachment.getClientAddress() + ": " + msg);
-        attachment.setRead(false);
-        attachment.getBuffer().flip();
-        
-    	if (msg.equals("0")) {
-    		Charset cs = Charset.forName("UTF-8");
-    		attachment.getBuffer().clear();
-    		System.out.println("processRequest() - line 85: Clearing buffer...");
-    		byte[] data = getID().getBytes(cs);
-			attachment.getBuffer().put(data);
-			attachment.getBuffer().flip();
-			addToRouteTable(attachment);
-    	}
-    	else
-    		return marketTable.get("2");
-    	return null;
-    }
     
 /*    static AsynchronousSocketChannel getReciptient(String msg) {
     	 if (msg.equals("0")) {
@@ -118,17 +106,5 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
  			marketTable.put(getID(), attachment.getClientChannel());
 		return null;
     }*/
-    
-    private static String getID() {
-		return Integer.toString(clientID);
-	}
-    
-	private static void addToRouteTable(Attachment attachment) {
-		
-		if (attachment.getPort() == 5000)
-			brokerTable.put(getID(), attachment.getClientChannel());
-		else if (attachment.getPort() == 5001)
-			marketTable.put(getID(), attachment.getClientChannel());	
-    }
 
 }

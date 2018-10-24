@@ -13,6 +13,16 @@ public class Attachment {
 	private SocketAddress clientAddr;
 	private int port;
 	private boolean isRead;
+	private String ID;
+	private boolean mustRead;
+
+	public String getID() {
+		return ID;
+	}
+
+	public void setID(int ID) {
+		this.ID = Integer.toString(ID);
+	}
 
 	public AsynchronousSocketChannel getClientChannel() {
 		return clientChannel;
@@ -64,5 +74,11 @@ public class Attachment {
 
 	public void setServerChannel(AsynchronousServerSocketChannel serverChannel) {
 		this.serverChannel = serverChannel;
+	}
+
+	public void setMustRead(boolean mustRead) { this.mustRead = mustRead; }
+
+	public boolean isMustRead() {
+		return mustRead;
 	}
 }
