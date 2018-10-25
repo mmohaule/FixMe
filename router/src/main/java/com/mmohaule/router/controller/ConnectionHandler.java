@@ -5,6 +5,7 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.nio.charset.Charset;
 
 import com.mmohaule.router.model.Attachment;
 
@@ -31,7 +32,13 @@ public class ConnectionHandler implements CompletionHandler<AsynchronousSocketCh
 			newAttachment.setID(ID++);
 			RequestHandler.addToRouteTable(newAttachment);
 			
-			clientChannel.read(newAttachment.getBuffer(), newAttachment, readWriteHandler);
+			Charset cs = Charset.forName("UTF-8");
+            byte[] data = newAttachment.getID().getBytes(cs);
+
+            newAttachment.getBuffer().put(data);
+            newAttachment.getBuffer().flip();
+			
+			clientChannel.write(newAttachment.getBuffer(), newAttachment, readWriteHandler);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -1,4 +1,4 @@
-package com.mmohaule.broker.model;
+package com.mmohaule.market;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
@@ -9,7 +9,7 @@ public class Attachment {
     private ByteBuffer                  buffer;
     private Thread                      mainThread;
     private boolean                     isRead;
-    private boolean                     isBrokerIdSet;
+    private boolean                     isMarketIdSet;
 
     public AsynchronousSocketChannel getClientChannel() {
         return clientChannel;
@@ -43,12 +43,12 @@ public class Attachment {
         isRead = read;
     }
 
-    public boolean isBrokerIdSet() {
-        return isBrokerIdSet;
+    public boolean isMarketIdSet() {
+        return isMarketIdSet;
     }
 
-    public void setBrokerIdSet(boolean brokerIdSet) {
-        isBrokerIdSet = brokerIdSet;
+    public void setMarketIdSet(boolean marketIdSet) {
+        isMarketIdSet = marketIdSet;
     }
 
 }

@@ -9,5 +9,6 @@
   	<module>router</module>
   	<module>broker</module>
   	<module>market</module>
+  	<module>core</module>
   </modules>
 </project>

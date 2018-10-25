@@ -1,10 +1,8 @@
 package com.mmohaule.router.controller;
 
 import java.io.IOException;
-import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.nio.charset.Charset;
-import java.util.Hashtable;
 
 import com.mmohaule.router.model.Attachment;
 
