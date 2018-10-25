@@ -1,8 +1,6 @@
 package com.mmohaule.router.controller;
 
 import com.mmohaule.router.model.Attachment;
-
-import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.charset.Charset;
 import java.util.Hashtable;
 
@@ -24,7 +22,6 @@ public class RequestHandler {
         attachment.getBuffer().get(bytes, 0, limits);
         msg = new String(bytes);
         System.out.println(attachment.getClientAddress() + ": " + msg);
-        //attachment.setRead(false);
         attachment.getBuffer().flip();
 
         if (msg.equals("0")) {
@@ -34,10 +31,11 @@ public class RequestHandler {
             byte[] data = attachment.getID().getBytes(cs);
             attachment.getBuffer().put(data);
             attachment.getBuffer().flip();
-            //addToRouteTable(attachment);
         }
-        else
-            return marketTable.get("2");
+        else {
+            String ID = ResponseGenerator.extractSenderCompId(msg);
+            return getChannelByID(attachment, ID);
+        }
         return null;
     }
 
@@ -47,5 +45,14 @@ public class RequestHandler {
             brokerTable.put(attachment.getID(), attachment);
         else if (attachment.getPort() == 5001)
             marketTable.put(attachment.getID(), attachment);
+    }
+
+    private static Attachment getChannelByID(Attachment attachment, String ID) {
+        if (attachment.getPort() == 5000)
+            return marketTable.get(ID);
+        else if (attachment.getPort() == 5001)
+            return brokerTable.get(ID);
+        else
+            return null;
     }
 }

@@ -36,29 +36,26 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
         	
         	if (channel != null) {
 
-                System.out.println("Market found");
-        		//attachment.getBuffer().flip();
                 limits = attachment.getBuffer().limit();
                 bytes = new byte[limits];
                 attachment.getBuffer().get(bytes, 0, limits);
                 msg = new String(bytes);
-
-
-                ReadWriteHandler readWriteHandler = new ReadWriteHandler();
                 
                 System.out.println("Buffer" + ": " + msg);
                 System.out.println("Writting to : " + channel.getID());
-        		//channel.write(attachment.getBuffer(), attachment, readWriteHandler);
-                Charset cs = Charset.forName("UTF-8");
+
+
                 attachment.getBuffer().clear();
-                //System.out.println("processRequest() - line 85: Clearing buffer...");
+
+                Charset cs = Charset.forName("UTF-8");
                 byte[] data = msg.getBytes(cs);
+
                 channel.getBuffer().put(data);
                 channel.getBuffer().flip();
                 channel.setRead(false);
                 channel.setMustRead(true);
+
                 channel.getClientChannel().write(channel.getBuffer(), channel, this );
-                //attachment.getClientChannel().write(attachment.getBuffer(), attachment, this );
         	}
         	else {
         	    System.out.println("Market is null");
@@ -72,21 +69,13 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
             attachment.getBuffer().clear();
             if (attachment.isMustRead()) {
                 attachment.setRead(true);
-                System.out.println("completed() - line 57: Clearing buffer...");
+                System.out.println("completed() - line 75: Clearing buffer...");
                 attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
             }
             else {
                 attachment.setRead(false);
                 System.out.println("Not listening");
             }
-            
-            /*attachment.getBuffer().flip();
-            limits = attachment.getBuffer().limit();
-            bytes = new byte[limits];
-            attachment.getBuffer().get(bytes, 0, limits);
-            msg = new String(bytes);
-            
-            System.out.println("Buffer (read)--" + ": " + msg);*/
         }
 
     }
@@ -94,17 +83,5 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
     public void failed(Throwable exc, Attachment attachment) {
         exc.printStackTrace();
     }
-    
-
-    
-/*    static AsynchronousSocketChannel getReciptient(String msg) {
-    	 if (msg.equals("0")) {
- 			
-         	//System.out.println("Market Channel: " + channel);
- 		}
- 		else if (attachment.getPort() == 5001)
- 			marketTable.put(getID(), attachment.getClientChannel());
-		return null;
-    }*/
 
 }

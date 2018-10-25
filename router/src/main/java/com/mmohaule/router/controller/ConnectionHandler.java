@@ -10,7 +10,7 @@ import com.mmohaule.router.model.Attachment;
 
 public class ConnectionHandler implements CompletionHandler<AsynchronousSocketChannel, Attachment> {
 
-	private static int ID = 1;
+	private static int ID = 100000;
 
 	public void completed(AsynchronousSocketChannel clientChannel, Attachment attachment) {
 		try {
