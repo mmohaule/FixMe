@@ -15,10 +15,17 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
             try {
                 attachment.getClientChannel().close();
                 System.out.println("Stopped listening to the client: " + attachment.getClientAddress());
+                if (attachment.getPort() == 5000) {
+        	        RequestHandler.brokerTable.remove(attachment.getID());
+                }
+                else if (attachment.getPort() == 5001) {
+        	        RequestHandler.marketTable.remove(attachment.getID());
+                }
             }
             catch (IOException e) {
                 e.printStackTrace();
             }
+            return ;
         }
 
         
@@ -56,12 +63,11 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
                 channel.getClientChannel().write(channel.getBuffer(), channel, this );
         	}
         	else {
-        	    System.out.println("writing to client");
+        	    System.out.println("writing back to client");
         	    if (attachment.getPort() == 5001) {
         	        attachment.setMustRead(false);
                 }
 
-                
                 RequestHandler.getMarkets(attachment);
                 attachment.getClientChannel().write(attachment.getBuffer(), attachment, this);
             }
@@ -70,7 +76,7 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
             attachment.getBuffer().clear();
             if (attachment.isMustRead()) {
                 attachment.setRead(true);
-                System.out.println("completed() - line 75: Clearing buffer...");
+                System.out.println("Listening...");
                 attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
             }
             else {

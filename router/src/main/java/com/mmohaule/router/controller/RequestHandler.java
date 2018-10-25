@@ -7,29 +7,20 @@ import com.mmohaule.router.model.Attachment;
 
 public class RequestHandler {
 
-	private static Hashtable<String, Attachment> brokerTable = new Hashtable<String, Attachment>();
-	public static Hashtable<String, Attachment> marketTable = new Hashtable<String, Attachment>();
+	static Hashtable<String, Attachment> brokerTable = new Hashtable<String, Attachment>();
+	static Hashtable<String, Attachment> marketTable = new Hashtable<String, Attachment>();
 
 	public static Attachment processRequest(Attachment attachment) {
 
-		int limits;
 		byte[] bytes;
-		String msg;
-
-		attachment.getBuffer().flip();
-		limits = attachment.getBuffer().limit();
-		bytes = new byte[limits];
-		attachment.getBuffer().get(bytes, 0, limits);
-		msg = new String(bytes);
-		System.out.println(attachment.getClientAddress() + ": " + msg);
-		attachment.getBuffer().flip();
 
 		String ID;
+		String message = buffToStr(attachment);
 
-		if (RequestValidation.isCommand(msg))
-			ID = ResponseGenerator.extractCompId(msg);
+		if (RequestValidation.isCommand(message))
+			ID = ResponseGenerator.extractCompId(message);
 		else
-			ID = ResponseGenerator.extractTargetCompId(msg);
+			ID = ResponseGenerator.extractTargetCompId(message);
 
 		return getChannelByID(attachment, ID);
 
@@ -52,6 +43,22 @@ public class RequestHandler {
 			return null;
 	}
 
+	public static String buffToStr(Attachment attachment) {
+		int limit;
+		byte[] bytes;
+		String message;
+
+		attachment.getBuffer().flip();
+		limit = attachment.getBuffer().limit();
+		bytes = new byte[limit];
+		attachment.getBuffer().get(bytes, 0, limit);
+		message = new String(bytes);
+		System.out.println(attachment.getClientAddress() + ": " + message);
+		attachment.getBuffer().flip();
+
+		return message;
+	}
+
 	public static void getMarkets(Attachment attach) {
 		String str = "";
 		String key = null;
@@ -62,12 +69,12 @@ public class RequestHandler {
 		while (e.hasMoreElements()) {
 			key = (String) e.nextElement();
 			System.out.println("Market: " + marketTable.get(key).getClientChannel().isOpen());
-			
+
 			if (!marketTable.get(key).getClientChannel().isOpen())
 				marketTable.remove(key);
 			else
 				str += System.lineSeparator() + key;
-				
+
 		}
 
 		bytes = str.getBytes();
