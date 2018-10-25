@@ -21,7 +21,7 @@ public class ResponseGenerator {
 
         tokens = request.split(" ");
         marketData = MarketData.getInstance();
-        return (tokens[0] + " " + marketData.toString());
+        return (marketData.toString() + " " + tokens[0]);
     }
 
     public static String extractSenderCompId(String request) {

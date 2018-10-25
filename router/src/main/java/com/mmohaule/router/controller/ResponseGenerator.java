@@ -4,7 +4,7 @@ import com.mmohaule.router.fixmsg.*;
 
 public class ResponseGenerator {
 
-    public static String extractSenderCompId(String request) {
+    public static String extractTargetCompId(String request) {
         int         startIndex;
         int         endIndex;
         String      senderCompIdTagVal;
@@ -21,6 +21,7 @@ public class ResponseGenerator {
         String[]    tokens;
         
         tokens = request.split(" ");
-        return (tokens[0]);
+        int len = tokens.length;
+        return (tokens[len - 1]);
     }
 }

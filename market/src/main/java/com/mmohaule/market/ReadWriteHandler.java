@@ -22,7 +22,7 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
             routerRequestBytes = new byte[limits];
             attachment.getBuffer().get(routerRequestBytes, 0, limits);
             routerRequest = new String(routerRequestBytes);
-            System.out.println(routerRequest);
+            System.out.println("request received: " + routerRequest);
 
             request = new Request(attachment, routerRequest);
             requestProcessChain = new RequestProcessChain();

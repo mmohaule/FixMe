@@ -56,10 +56,13 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
                 channel.getClientChannel().write(channel.getBuffer(), channel, this );
         	}
         	else {
-        	    System.out.println("Market is null");
+        	    System.out.println("writing to client");
         	    if (attachment.getPort() == 5001) {
         	        attachment.setMustRead(false);
                 }
+
+                
+                RequestHandler.getMarkets(attachment);
                 attachment.getClientChannel().write(attachment.getBuffer(), attachment, this);
             }
         }
