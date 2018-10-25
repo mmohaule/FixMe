@@ -32,6 +32,7 @@ public class RequestHandler {
 			brokerTable.put(attachment.getID(), attachment);
 		else if (attachment.getPort() == 5001)
 			marketTable.put(attachment.getID(), attachment);
+		System.out.println("Added to Table");
 	}
 
 	private static Attachment getChannelByID(Attachment attachment, String ID) {
