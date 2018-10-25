@@ -24,19 +24,11 @@ public class RequestHandler {
         System.out.println(attachment.getClientAddress() + ": " + msg);
         attachment.getBuffer().flip();
 
-        if (msg.equals("0")) {
-            Charset cs = Charset.forName("UTF-8");
-            attachment.getBuffer().clear();
-            System.out.println("processRequest() - line 85: Clearing buffer...");
-            byte[] data = attachment.getID().getBytes(cs);
-            attachment.getBuffer().put(data);
-            attachment.getBuffer().flip();
-        }
-        else {
+    
             String ID = ResponseGenerator.extractSenderCompId(msg);
+            if (ID == null)
+            	ID = ResponseGenerator.extractCompId(msg);
             return getChannelByID(attachment, ID);
-        }
-        return null;
     }
 
     public static void addToRouteTable(Attachment attachment) {

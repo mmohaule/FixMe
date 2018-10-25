@@ -16,4 +16,11 @@ public class ResponseGenerator {
         tokens = senderCompIdTagVal.split(FixMsg.TAG_VAL_LINK);
         return (tokens[1]);
     }
+    
+    public static String extractCompId(String request) {
+        String[]    tokens;
+        
+        tokens = request.split(" ");
+        return (tokens[0]);
+    }
 }

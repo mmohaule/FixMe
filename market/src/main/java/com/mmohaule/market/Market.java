@@ -26,7 +26,7 @@ public class Market {
         attachment.setRead(true);
         attachment.setMarketIdSet(false);
         attachment.setMainThread(Thread.currentThread());
-        clientChannel.read(attachment.getBuffer(), attachment, new ReadWriteHandler());
+        clientChannel.read(attachment.getBuffer(), attachment, new ConnectionHandler());
 
         attachment.getMainThread().join();
         }
