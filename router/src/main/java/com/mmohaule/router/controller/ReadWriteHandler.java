@@ -11,6 +11,7 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
 	
     public void completed(Integer result, Attachment attachment) {
 
+    	System.out.println("\nEkucaleni komhlaba");
         if (result == -1) {
             try {
                 attachment.getClientChannel().close();
@@ -61,12 +62,11 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
                 channel.setMustRead(true);
 
                 channel.getClientChannel().write(channel.getBuffer(), channel, this );
+
         	}
         	else {
         	    System.out.println("writing back to client");
-        	    if (attachment.getPort() == 5001) {
-        	        attachment.setMustRead(false);
-                }
+
 
                 RequestHandler.getMarkets(attachment);
                 attachment.getClientChannel().write(attachment.getBuffer(), attachment, this);
@@ -74,15 +74,35 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
         }
         else {
             attachment.getBuffer().clear();
-            if (attachment.isMustRead()) {
+            attachment.setRead(true);
+            
+            System.out.println("Listening...");
+            try {
+            	attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
+            }
+            catch(Exception e) {
+            	try {
+					Thread.currentThread().join();
+					attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            }
+            
+            /*if (attachment.isMustRead()) {
                 attachment.setRead(true);
                 System.out.println("Listening...");
-                attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
+                try {
+                	attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
+                }
+                catch(Exception e) {
+                }
             }
             else {
                 attachment.setRead(false);
                 System.out.println("Not listening");
-            }
+            }*/
         }
 
     }
