@@ -64,19 +64,19 @@ public class RequestHandler {
 		String str = "";
 		String key = null;
 		byte[] bytes = null;
-
+		
 		Enumeration<String> e = marketTable.keys();
 
 		while (e.hasMoreElements()) {
 			key = (String) e.nextElement();
 			System.out.println("Market: " + marketTable.get(key).getClientChannel().isOpen());
 
-			if (!marketTable.get(key).getClientChannel().isOpen())
-				marketTable.remove(key);
-			else
-				str += System.lineSeparator() + key;
+			str += System.lineSeparator() + key;
 
 		}
+		
+		if (marketTable.isEmpty())
+			str = "No markets found!";
 
 		bytes = str.getBytes();
 		attach.getBuffer().clear();

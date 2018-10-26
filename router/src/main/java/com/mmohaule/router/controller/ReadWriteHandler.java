@@ -81,13 +81,6 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
             	attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
             }
             catch(Exception e) {
-            	try {
-					Thread.currentThread().join();
-					attachment.getClientChannel().read(attachment.getBuffer(), attachment, this);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
             }
             
             /*if (attachment.isMustRead()) {
