@@ -28,10 +28,9 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
             if (!attachment.isBrokerIdSet()) {
                 BrokerData.setBrokerId(routerResp);
                 attachment.setBrokerIdSet(true);
-                System.out.print("Broker Id: ");
             }
             
-            System.out.println("router response: " + routerResp);
+            System.out.println(routerResp);
 
             brokerRequest = getBrokerRequest();
 
@@ -41,7 +40,6 @@ public class ReadWriteHandler implements CompletionHandler<Integer, Attachment> 
             }
 
             attachment.getBuffer().clear();
-            System.out.println("send broker request: " + brokerRequest);
             byteBrokerRequest = brokerRequest.getBytes();
             attachment.getBuffer().put(byteBrokerRequest);
             attachment.getBuffer().flip();

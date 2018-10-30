@@ -12,18 +12,26 @@ public class RequestHandler {
 
 	public static Attachment processRequest(Attachment attachment) {
 
-		byte[] bytes;
-
 		String ID;
 		String message = buffToStr(attachment);
+		byte[] bytes = null;
+
+		System.out.println(attachment.getClientAddress() + ": " + message);
 
 		if (RequestValidation.isCommand(message))
-			ID = ResponseGenerator.extractCompId(message);
+			ID = ResponseGenerator.extractCmdTargetID(message);
 		else
-			ID = ResponseGenerator.extractTargetCompId(message);
+			ID = ResponseGenerator.extractFixTargetID(message);
+
+		if (isInTable(marketTable, ID) || attachment.getPort() == 5001)
+			bytes = message.getBytes();
+		else
+			bytes = ID.getBytes();
+
+		attachment.getBuffer().clear();
+		attachment.getBuffer().put(bytes);
 
 		return getChannelByID(attachment, ID);
-
 	}
 
 	public static void addToRouteTable(Attachment attachment) {
@@ -32,7 +40,6 @@ public class RequestHandler {
 			brokerTable.put(attachment.getID(), attachment);
 		else if (attachment.getPort() == 5001)
 			marketTable.put(attachment.getID(), attachment);
-		System.out.println("Added to Table");
 	}
 
 	private static Attachment getChannelByID(Attachment attachment, String ID) {
@@ -54,7 +61,6 @@ public class RequestHandler {
 		bytes = new byte[limit];
 		attachment.getBuffer().get(bytes, 0, limit);
 		message = new String(bytes);
-		System.out.println(attachment.getClientAddress() + ": " + message);
 		attachment.getBuffer().flip();
 
 		return message;
@@ -64,17 +70,19 @@ public class RequestHandler {
 		String str = "";
 		String key = null;
 		byte[] bytes = null;
-		
+		int count = 0;
+
 		Enumeration<String> e = marketTable.keys();
 
 		while (e.hasMoreElements()) {
 			key = (String) e.nextElement();
-			System.out.println("Market: " + marketTable.get(key).getClientChannel().isOpen());
 
-			str += System.lineSeparator() + key;
-
+			if (count++ == 0)
+				str += key;
+			else
+				str += System.lineSeparator() + key;
 		}
-		
+
 		if (marketTable.isEmpty())
 			str = "No markets found!";
 
@@ -82,5 +90,11 @@ public class RequestHandler {
 		attach.getBuffer().clear();
 		attach.getBuffer().put(bytes);
 		attach.getBuffer().flip();
+	}
+
+	public static boolean isInTable(Hashtable<String, Attachment> table, String ID) {
+		if (table.get(ID) != null)
+			return true;
+		return false;
 	}
 }

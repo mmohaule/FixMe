@@ -16,7 +16,7 @@ public class ConnectionHandler implements CompletionHandler<AsynchronousSocketCh
 	public void completed(AsynchronousSocketChannel clientChannel, Attachment attachment) {
 		try {
 			SocketAddress clientAddress = clientChannel.getRemoteAddress();
-			System.out.format("Accepted a  connection from  %s%n", clientAddress);
+			System.out.format("%nAccepted a  connection from  %s%n", clientAddress);
 			attachment.getServerChannel().accept(attachment, this);
 			
 			ReadWriteHandler readWriteHandler = new ReadWriteHandler();
@@ -27,7 +27,6 @@ public class ConnectionHandler implements CompletionHandler<AsynchronousSocketCh
 			newAttachment.setClientChannel(clientChannel);
 			newAttachment.setBuffer(ByteBuffer.allocate(2048));
 			newAttachment.setRead(false);
-			newAttachment.setMustRead(true);
 			newAttachment.setClientAddr(clientAddress);
 			newAttachment.setID(ID++);
 			RequestHandler.addToRouteTable(newAttachment);
